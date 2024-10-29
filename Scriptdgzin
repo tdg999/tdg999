@@ -1,0 +1,112 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+local StarterGui = game:GetService("StarterGui")
+
+-- Criar uma tela (ScreenGui)
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = playerGui
+
+-- Função para enviar mensagem no novo sistema de chat
+local function sendChatMessage(message)
+    local chatService = game:GetService("TextChatService")
+    local chatChannel = chatService.TextChannels:FindFirstChild("RBXGeneral")
+    
+    if chatChannel then
+        chatChannel:SendAsync(message)
+    else
+        warn("Não foi possível encontrar o canal de chat.")
+    end
+end
+
+-- Função para criar um botão
+local function createButton(name, text, size, position, color, textColor, parent)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Size = size
+    button.Position = position
+    button.Text = text
+    button.BackgroundColor3 = color
+    button.TextColor3 = textColor
+    button.Parent = parent
+    button.AutoButtonColor = false  -- Desativa a mudança de cor automática ao clicar
+    return button
+end
+
+-- Criar o botão "//MAT 🧞"
+local spamButton = createButton("SpamButton", "SPAM M", UDim2.new(0, 80, 0, 40), UDim2.new(0.8, -80, 0.1, -20), Color3.fromRGB(0, 0, 0), Color3.fromRGB(255, 0, 0), screenGui)
+
+-- Criar o botão "//RENDER 🧞"
+local renderButton = createButton("RenderButton", "SPAM R", UDim2.new(0, 80, 0, 40), UDim2.new(0.8, -80, 0.15, 0), Color3.fromRGB(0, 0, 0), Color3.fromRGB(255, 0, 0), screenGui)
+
+-- Tornar o botão "X" arrastável
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 30, 0, 30)  -- Tamanho do botão menor
+toggleButton.Position = UDim2.new(0.1, 0, 0.1, 0)  -- Posição inicial
+toggleButton.Text = "X"
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Parent = screenGui
+
+-- Fazer o botão circular (usar UICorner)
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(1, 0)
+corner.Parent = toggleButton
+
+-- Função para alternar a visibilidade dos outros botões
+local areButtonsVisible = true
+local function toggleButtonsVisibility()
+    areButtonsVisible = not areButtonsVisible
+    spamButton.Visible = areButtonsVisible
+    renderButton.Visible = areButtonsVisible
+end
+
+-- Quando o botão circular for clicado, alterna a visibilidade dos botões
+toggleButton.MouseButton1Click:Connect(toggleButtonsVisibility)
+
+-- Função para gerenciar cooldown dos botões
+local function buttonCooldown(button, message)
+    if button:IsDescendantOf(screenGui) and not button:GetAttribute("Cooldown") then
+        button:SetAttribute("Cooldown", true)
+        
+        -- Mudar para cor cinza e iniciar contagem
+        local originalText = button.Text
+        local originalColor = button.BackgroundColor3
+        button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+        
+        for i = 1, 1 do
+            button.Text = tostring(1 - i)
+            wait(1)
+        end
+
+        -- Restaurar cor e texto original, e permitir novo clique
+        button.BackgroundColor3 = originalColor
+        button.Text = originalText
+        button:SetAttribute("Cooldown", false)
+    end
+end
+
+-- Eventos de clique com cooldown para os botões "//MAT LEGIT 🧞" e "//RENDER LEGIT🧞"
+spamButton.MouseButton1Click:Connect(function()
+    if not spamButton:GetAttribute("Cooldown") then
+        sendChatMessage("//MAT SEM ERRO🧞")
+        buttonCooldown(spamButton, "//MAT SEM ERRO 🧞")
+    end
+end)
+
+renderButton.MouseButton1Click:Connect(function()
+    if not renderButton:GetAttribute("Cooldown") then
+        sendChatMessage("//RENDER SEM ERRO")
+        buttonCooldown(renderButton, "//RENDER SEM ERRO")
+    end
+end)
+
+-- Exibir o aviso ao executar o script
+StarterGui:SetCore("SendNotification", {
+    Title = "Xitzada do Dg57K🧙🏿‍♂️",
+    Text = "Xitzin do Dg57K",
+    Duration = 10,
+    Icon = "rbxassetid://76766404101147"
+})
